@@ -1,0 +1,59 @@
+{%- macro catalogoForm(action_url) -%}
+    <form class="" action="{{action_url}}">
+        <div class="">
+            <input type="text" value="{{catalogo.titulo}}">
+        </div>
+        <div>
+            <input type="text" value="{{catalogo.detalle}}">
+        </div>
+        <div>
+            <input type="file" value="{{catalogo.portada}}">
+        </div>
+    </form>
+{%- endmacro -%}
+
+{%- macro productoForm(action_url, catalogos) -%}
+<div class="p-2 w-1/2">
+    <h1>Crear Producto</h1>
+<form class="grid grid-cols-1 gap-1 p-2 bg-white rounded-md"  action="{{action_url}}" method="post" enctype="multipart/form-data">
+    <div class="border flex flex-col p-2">
+       <label class="font-semibold text-sm" for="">Titulo</label> 
+        <input class="border-b outline-none " name="titulo"  type="text">
+    </div>
+    <div class="border flex flex-col p-2">
+        <label class="font-semibold text-sm"  for="">Detalles</label>
+        <input class="border-b outline-none" name="detalle" type="text">
+    </div>
+    <div class="flex border flex-col p-2">
+        <label class="font-semibold text-sm" for="">Catalogo</label>
+        <select class="select-none" name="catalogo_id" id="">
+            {% for catalogo in catalogos %}
+            <option class="" value="{{catalogo.id}}">
+                {{ catalogo.titulo }}
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="">
+        <label class="text-sm font-semibold" for="">Portada</label>
+        <div class="flex justify-center border border-dashed">
+            <div class="text-center">
+                <svg class="mx-auto h-12 w-12 text-gray-300" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" data-slot="icon">
+                    <path fill-rule="evenodd" d="M1.5 6a2.25 2.25 0 0 1 2.25-2.25h16.5A2.25 2.25 0 0 1 22.5 6v12a2.25 2.25 0 0 1-2.25 2.25H3.75A2.25 2.25 0 0 1 1.5 18V6ZM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0 0 21 18v-1.94l-2.69-2.689a1.5 1.5 0 0 0-2.12 0l-.88.879.97.97a.75.75 0 1 1-1.06 1.06l-5.16-5.159a1.5 1.5 0 0 0-2.12 0L3 16.061Zm10.125-7.81a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Z" clip-rule="evenodd" />
+                </svg>
+                <div>
+                    <label for="file-upload" class="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500">
+                        <span>Subir Foto</span>
+                        <input id="file-upload" name="portada" type="file" class="sr-only">
+                      </label>
+                </div>
+            </div>
+        </div>        
+    </div>
+    <div class="flex bg-green-700 p-2 justify-center text-white font-semibold">
+        
+        <button class="">Guardar</button>
+    </div>
+</form>
+</div>
+{% endmacro -%}

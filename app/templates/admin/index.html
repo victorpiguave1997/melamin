@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="h-screen w-full" >
+    <div>
+        <form method="post"  action="{{url_for('view.CreateCatalogo')}}" enctype="multipart/form-data" >
+            <div>
+                <label for="">Titulo</label>
+                <input type="text" name="titulo">
+            </div>
+            <div>
+                <label for="">Detalle</label>
+                <input type="text" name="detalle">
+            </div>
+            <div>
+                <input type="file" name="portada" id="">
+            </div>
+            <div>
+                <input type="submit" value="Guardar">
+            </div>
+        </form>
+    </div>
+    <button class="" id="OpenModalProducto" >Crear Producto</button>
+    <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center">
+        <h1>Producto</h1>
+        <form class=""  action="{{ url_for('view.CreateProduct')}}" method="post" enctype="multipart/form-data">
+            <div>
+               <label for="">Titulo</label> 
+                <input name="titulo"  type="text">
+            </div>
+            <div>
+                <label for="">Detalles</label>
+                <input name="detalle" type="text">
+            </div>
+            <div>
+                <select name="catalogo_id" id="">
+                    {% for catalogo in catalogos %}
+                    <option value="{{catalogo.id}}">
+                        {{ catalogo.titulo }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <input type="file" name="portada" id="">
+            </div>
+            <div>
+                <button>Guardar</button>
+            </div>
+        </form>
+        <button id="closeModal" class="absolute top-2 right-2 text-gray-600 hover:text-gray-900">✖</button>
+    </div>
+</section>
+
+<script>
+    // JavaScript para abrir y cerrar el modal
+    const modal = document.getElementById('modal');
+    const openModal = document.getElementById('OpenModalProducto');
+    const closeModal = document.getElementById('closeModal');
+
+    // Abrir el modal
+    openModal.addEventListener('click', () => {
+        modal.classList.remove('hidden');
+    });
+
+    // Cerrar el modal
+    closeModal.addEventListener('click', () => {
+        modal.classList.add('hidden');
+    });
+
+    // Cerrar el modal al hacer clic fuera de él
+    window.addEventListener('click', (event) => {
+        if (event.target === modal) {
+            modal.classList.add('hidden');
+        }
+    });
+</script>
+{% endblock %}

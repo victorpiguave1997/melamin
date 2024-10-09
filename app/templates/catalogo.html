@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="w-full h-screen p-2">
+    <h1>Catalogo</h1>
+    <div class="grid gap-2 grid-cols-2">
+        {% for catalogo in catalogos %}
+            <div class="w-full relative flex  justify-center items-center h-80">
+                <h1 class="absolute">{{catalogo.titulo }}</h1>
+                <img class="w-full h-80 object-cover rounded-md "  src="{{ url_for('view.upload_file', filename=catalogo.portada) }}" alt="" srcset="">
+            </div>
+        {% endfor%}
+    </div>
+</div>
+{% endblock %}

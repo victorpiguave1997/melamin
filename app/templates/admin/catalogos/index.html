@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block content %}
+<div>
+    {{catalogoForm(url_for('view.CreateCatalogo'))}}
+</div>
+<div>
+    {{productoForm(url_for('view.CreateCatalogo'), catalogos)}}
+</div>
+{% endblock %}
