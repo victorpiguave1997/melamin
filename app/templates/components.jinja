@@ -56,4 +56,83 @@
     </div>
 </form>
 </div>
-{% endmacro -%}
+{%- endmacro -%}
+
+{%- macro formAuth(url_for)-%}
+    <div class="flex flex-col justify-center items-center w-full h-screen">
+        
+        <form class="grid rounded-md shadow-md  border p-3 w-80  grid-cols-1 gap-2" method="post" action="{{url_for}}"  >
+            <div>
+                <h1 class="text-2xl">Crear Cuenta</h1>
+                <p class="uppercase text-sm font-semibold">Melamin</p>
+            </div>
+            <div class="">
+                <label class="text-sm font-semibold"  for="">Usuario</label>
+                <input class="w-full p-2  text-sm border outline-none rounded-md"  type="text" name="usuario" >
+            </div>
+            <div>
+                <label class="text-sm font-semibold" for="">Correo</label>
+                <input class="border p-2 text-sm w-full outline-none rounded-md" type="email" name="correo">
+            </div>
+            <div>
+                <label class="text-sm font-semibold" for="">Clave</label>
+                <input class="w-full p-2 text-sm border outline-none rounded-md" type="password" name="clave">
+            </div>
+            <div>
+                <button class="bg-blue-500 w-full rounded-md text-sm font-semibold p-2" >Crear Cuenta</button>
+            </div>
+        </form>
+    </div>
+{%- endmacro -%}
+
+{%- macro form_login() -%}
+<div class="bg-black w-80 rounded-md bg-opacity-50 p-4 flex flex-col">
+    <form class="grid grid-cols-1 gap-2" action="{{url_for('view.iniciar_sesion')}}" method="post">
+        <div>
+            <p class="text-sm text-white font-semibold">Bienvenido a</p>
+            <h1 class="uppercase font-semibold text-2xl text-white">Melamin</h1>
+        </div>
+        <hr>
+        <div class="">
+            <input placeholder="usuario o correo" class="rounded-md font-semibold w-full p-3 border bg-gray-100 outline-none" name="usuario_correo" type="text">
+        </div>
+        <div class="">
+            <input placeholder="clave" class="rounded-md font-semibold w-full p-3 bg-gray-100 border outline-none" name="clave" type="password">
+        </div>
+        <div class="w-80">
+            <a href="" class="text-sm text-white font-semibold" >Recuperar cuenta</a>
+        </div>
+        
+        <div class="pt-4">
+            <button class="bg-white p-3 font-semibold w-full rounded-md" >Iniciar Sesion</button>
+        </div>
+        <hr>
+        <div>
+           <a class="text-white text-sm font-semibold" href="{{url_for('view.crear_cuenta')}}">Crear Cuenta</a> 
+        </div>
+    </form>
+</div>
+{%- endmacro -%} 
+
+{%- macro tabla(items) -%}
+    <table class="table-auto">
+        <thead>
+            <tr>
+                <th>id</th>
+                <th>titulo</th>
+                <th>imagen</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+                <tr>
+                    <td> {{item.id}}</td>
+                    <td> {{item.titulo}} </td>
+                    <td>
+                        <a href="{{url_for('view.upload_file', filename=item.portada)}}">{{item.portada}}</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{%- endmacro -%}

@@ -1,33 +1,77 @@
-from flask import Blueprint, render_template, request, current_app, send_from_directory, url_for, redirect
+from flask import Blueprint, render_template, request, send_from_directory, url_for, redirect, flash
 from werkzeug.utils import secure_filename
+from werkzeug.security import generate_password_hash, check_password_hash
+from . import login_manager, db
 import uuid
-from  .model import Catalogo, db, Producto
+from  .model import Catalogo, db, Producto, Usuario, Rol
 import os
 from .config import Config
+from flask_login import login_user, current_user, logout_user, login_required
 
 view = Blueprint('view', __name__)
 
 IMAGE_EXTENSION = {'jpg', 'jpeg'}
 
+@login_manager.user_loader
+def load_user(user_id):
+    return Usuario.query.get(int(user_id))
 
 def verify_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in IMAGE_EXTENSION
+
+@view.route('/iniciar_sesion', methods=['GET', 'POST'])
+def iniciar_sesion():
+    if request.method == 'POST':
+        usuario_correo = request.form['usuario_correo']
+        clave = request.form['clave']
+        if not usuario_correo or not clave:
+            flash('No se ingresaron los valores')
+        usuario = Usuario.query.filter((Usuario.usuario==usuario_correo)| (Usuario.correo==usuario_correo)).first()
+        if usuario:
+            if check_password_hash(usuario.clave, clave):
+                login_user(usuario)
+            else:
+                flash ('La contraseña es incorrecta')
+        else:
+            flash('El usuario no existe')
+    return redirect(url_for('view.Panel'))
+
+@view.route('/cerrar_sesion', methods=['GET', 'POST'])
+def cerrar_cuenta():
+    logout_user()
+    return redirect(url_for('view.IndexPage'))
+
+@view.route('/crear_cuenta', methods=['GET','POST'])
+def crear_cuenta():
+    if request.method == 'POST':
+        nombre_usuario = request.form['usuario']
+        correo = request.form['correo']
+        clave = request.form['clave']
+        if not nombre_usuario or not correo or not nombre_usuario:
+            flash("Complete los campos")
+        if Usuario.query.filter_by(usuario=nombre_usuario).first():
+            flash('El usuario esta en uso')
+        if Usuario.query.filter_by(correo=correo).first():
+            flash ('El correo esta en uso')
+        else:
+            usuario = Usuario(usuario=nombre_usuario , correo=correo, clave=generate_password_hash(clave), rol_id = Rol.query.filter_by(rol="usuario").first().id)
+            db.session.add(usuario)
+            db.session.commit()
+            login_user(usuario)
+            return redirect(url_for('AdminPage'))
+        return  redirect(url_for('view.IndexPage'))
+    return render_template('auth/crear_cuenta.html')
+
 
 @view.route('')
 @view.route('/')
 def IndexPage():
     return render_template('index.html')
 
-@view.route('/dashboard', methods=['GET', 'POST'])
-def AdminPage():
+@view.route('/panel', methods=['GET', 'POST'])
+def Panel():
     catalogos = Catalogo.query.all()
     return render_template('/admin/index.html', catalogos=catalogos)
-
-@view.route('/dashboard/catalogos')
-def AdminCatalogo():
-    catalogos = Catalogo.query.all()
-    return render_template('admin/catalogos/index.html', catalogos=catalogos)
-
 
 @view.route('/crate_catalogo', methods=['GET', 'POST'])
 def CreateCatalogo():
@@ -47,15 +91,23 @@ def CreateCatalogo():
         print (detalle)
     return redirect(url_for('view.AdminPage'))
 
-@view.route('/delete_catalogo/<int:id>')
+@view.route('/eliminar_categoria/<int:id>')
+@login_required
 def DeleteCatalogo(id):
-    catalogo = Catalogo.query.filter_by(id=id).first()
-    if catalogo:
-        db.session.delete(catalogo)
-        db.session.commit()
-        return "Eliminación correcta"
+    if current_user.rol.rol != 'admin':
+        flash('No se puede realizar esta operación')
+        return redirect(url_for('view.Panel'))
     else:
-        return 'fail'
+        catalogo = Catalogo.query.filter_by(id=id).first()
+        if catalogo:
+            db.session.delete(catalogo)
+            db.session.commit()
+            os.remove(os.path.join(Config.UPLOAD_FOLDER, catalogo.portada))
+            flash('Elimación correcta')
+        else:
+            flash('No se encontro elemento')
+            return redirect(url_for('view.Panel'))
+
 @view.route('/detail_catalogo/<int:id>')
 def DetailCatalogo(id):
     catalogo = Catalogo.query.filter_by(id=id).first()
@@ -76,10 +128,8 @@ def UpdateCatalogo(id):
     else:
         return "No existe te regresaremos al inicio"
     
-
-
-@view.route('/crate_producto', methods=['GET','POST'])
-def CreateProduct():
+@view.route('/agregar_producto', methods=['GET','POST'])
+def agregar_producto():
     if request.method == 'POST':
         titulo = request.form['titulo']
         detalle = request.form['detalle']
@@ -93,15 +143,14 @@ def CreateProduct():
         db.session.add(producto)
         db.session.commit()
 
-    return redirect(url_for('view.AdminPage'))
-
-
-@view.route('/catalogo')
-def CatalogoPage():
-    catalogos = Catalogo.query.all()
-    return render_template('catalogo.html', catalogos=catalogos)
+    return redirect(url_for('view.Panel'))
 
 @view.route('/productos')
+def productos():
+    catalogos = Catalogo.query.all()
+    productos = Producto.query.order_by(db.func.random()).all()
+    return render_template('catalogo.html', catalogos=catalogos, productos=productos)
+
 
 @view.route('/upload/<filename>')
 def upload_file(filename):

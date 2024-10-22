@@ -1,14 +1,23 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="w-full h-screen p-2">
-    <h1>Catalogo</h1>
-    <div class="grid gap-2 grid-cols-2">
+<div class="w-full h-screen">
+    <h1>Categorias</h1>
+    <div class="flex w-full">
         {% for catalogo in catalogos %}
-            <div class="w-full relative flex  justify-center items-center h-80">
+            <div class="w-full relative flex  justify-center items-center">
                 <h1 class="absolute">{{catalogo.titulo }}</h1>
-                <img class="w-full h-80 object-cover rounded-md "  src="{{ url_for('view.upload_file', filename=catalogo.portada) }}" alt="" srcset="">
+                <img class="w-40 h-20 object-cover rounded-md "  src="{{ url_for('view.upload_file', filename=catalogo.portada) }}" alt="" srcset="">
             </div>
         {% endfor%}
     </div>
+    <h1 class="text-3xl font-bold mb-4">Productos</h1>
+    <div class="masonry">
+        {% for producto in productos %}
+        <div class="masonry-item">
+            <img  class="w-full h-auto rounded-lg    object-cover mb-2" src="{{ url_for('view.upload_file', filename=producto.portada)}}" alt="" srcset="">
+        </div>
+        {% endfor %}
+    </div>
 </div>
+
 {% endblock %}

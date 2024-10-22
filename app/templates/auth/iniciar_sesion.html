@@ -1,8 +1,9 @@
 {% extends 'base.html' %}
 {% block content %}
-<section class="h-screen w-full" >
-    {{tabla(catalogos)}}
-
+<div class="flex justify-center items-center">
+    <div>
+        {{form_login()}}
+    </div>
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
             {% for category, message in messages %}
@@ -10,10 +11,6 @@
             {% endfor %}
         {% endif %}
     {% endwith %}
-    <div>
-        <div>
-            {{productoForm(url_for('view.agregar_producto'), catalogos)}}
-        </div>
-    </div>
-</section>
+</div>
+   
 {% endblock %}
