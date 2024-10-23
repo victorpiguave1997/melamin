@@ -22,23 +22,23 @@ def create_app():
     from werkzeug.security import generate_password_hash
     app.register_blueprint(view, url_prefix="/")
 
-    # with app.app_context():
-    #     if not Rol.query.filter_by(rol='admin' ).first():
-    #         rol_admin = Rol(rol = 'admin')
-    #         rol_user = Rol(rol='usuario')
-    #         db.session.add(rol_admin)
-    #         db.session.add(rol_user)
-    #         db.session.commit()
+    with app.app_context():
+         if not Rol.query.filter_by(rol='admin' ).first():
+             rol_admin = Rol(rol = 'admin')
+             rol_user = Rol(rol='usuario')
+             db.session.add(rol_admin)
+             db.session.add(rol_user)
+             db.session.commit()
 
-    #     if not Usuario.query.filter_by(usuario='admin').first():
-    #         usuario = Usuario(
-    #             usuario='admin',
-    #             correo='admin@example.com',
-    #             clave= generate_password_hash('admin'),
-    #             rol_id = Rol.query.filter_by(rol="admin").first().id
-    #         )
-    #         db.session.add(usuario)
-    #         db.session.commit()
+         if not Usuario.query.filter_by(usuario='admin').first():
+             usuario = Usuario(
+                 usuario='admin',
+                 correo='admin@example.com',
+                 clave= generate_password_hash('admin'),
+                 rol_id = Rol.query.filter_by(rol="admin").first().id
+             )
+             db.session.add(usuario)
+             db.session.commit()
 
     return app
 
